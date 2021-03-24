@@ -1,7 +1,4 @@
-# This is a sample Python script.
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 import math
 from collections import Counter
@@ -26,8 +23,7 @@ def generateDict():
     myDict["classeyi"] = ['não', 'não', 'sim', 'sim', 'sim', 'não', 'sim', 'não', 'sim',
                          'sim', 'sim', 'sim', 'sim', 'não']
     return myDict
-def entropy(file):
-    dictFinal = {}
+def calcularEntropias(file):
 
     i =0
     firstEntropia = 0
@@ -38,14 +34,13 @@ def entropy(file):
 
         if i == 0:
             firstIndex = index
-            print(firstIndex)
 
         total = len(classe)
         #print("index ", index, " : ",total)
 
         my_list = classe
         my_dict = {i: my_list.count(i) for i in my_list}
-        print(my_dict)
+        #print(my_dict)
 
         if i == 0:
             for k, v in my_dict.items():
@@ -66,9 +61,7 @@ def entropy(file):
                 arrayValsAux[ind] = arrayVals
 
             #{'falso': ['não', 'não', 'sim', 'sim', 'sim', 'não', 'sim', 'não'], 'verdadeiro': ['não', 'não', 'sim', 'sim', 'sim', 'não']}
-            print("arrayvalsaux: ",index," : ",arrayValsAux)
-
-
+            #print("arrayvalsaux: ",index," : ",arrayValsAux)
             returnDictionary[index] = arrayValsAux
 
             entropia = 0
@@ -90,28 +83,26 @@ def entropy(file):
         i+=1
 
     return final, returnDictionary
-def getPerIndex(file,index,key,listInds):
 
-    print("indice da vez: ", index)
+def porIndex(file,index,key,listInds):
 
-    indices = list()
+    #print("indice da vez: ", index)
     dictFinal = {}
     for k, v in file.items():
-        if k != key:
+        if k != key: #caso não seja o atributo do arquivo que já tenha sido considerado alguma outra vez
             cont = 0
             indices = list()
-            print(k, " : ", v)
+            #print(k, " : ", v)
             for i in listInds:
                 if i == index:
                     indices.append(v[cont])
                 cont +=1
-            print("indices: ",indices)
+            #print("indices: ",indices)
             dictFinal[k] = indices
 
-            print("dict final::::: ",dictFinal)
-
     return dictFinal
-def calMaior(entropia):
+
+def maiorEntropia(entropia):
     maiorValor = -1
     key = ""
     for etf in entropia:
@@ -119,46 +110,44 @@ def calMaior(entropia):
             maiorValor = entropia.get(etf)
             key = etf
     return maiorValor, key
-def decisionTree(file):
+
+def arvoreDecisao(file):
 
     tree = {}
-    entropia,leafs = entropy(file)
 
-    ##calcular a maior
-    maior, key = calMaior(entropia)  # Assign returned tuple
-    tree[key] = 1 #raiz
+    #calcular a entropia para o caso da raiz e pegar as folhas (sim, não)
+    entropia,leafs = calcularEntropias(file)
+
+    #pegar a maior entropia e a chave que corresponde a esta maior entropia (se é tempo, temperatura, ventoso, etc)
+    maior, key = maiorEntropia(entropia)
+
+    #define árvore com a raiz sendo uma tupla (valor 1, e o maior valor da entropia)
+    tree[key] = (1, maior)
+
+    #pega os valores do atributo , então lista = [falso, verdadeiro] para o caso do ventoso
     lista = remove_repetidos(file.get(key))
-
 
     perindx = {}
     contador = 1.0
     contadorAux = 0.0
-    leafs = {}
+    #leafs = {}
     for l in lista:
-        perindx = getPerIndex(file,l,key,file.get(key))
-        #print("perindex: ", perindx)
-        entropia, leafs = entropy(perindx)
-        maiorAux, keyAux = calMaior(entropia)
+        perindx = porIndex(file,l,key,file.get(key))
+        entropia, leafs = calcularEntropias(perindx)
+        maiorAux, keyAux = maiorEntropia(entropia)
 
         contador += 0.1
         tree[l] = (contador, maiorAux)
 
-        #print("leafs index:", leafs.get(keyAux))
         contadorAux += 1
         tree[keyAux] = str(contador)+"."+str(contadorAux)
         tree[str(keyAux)+str(contador)+"."+str(contadorAux)] = leafs.get(keyAux)
+
         file.pop(keyAux)
 
     print(tree)
-    for t in tree:
-        print(t+"\n")
-        #break
 
-
-from collections import defaultdict
-
-
-def readingFile():
+def lerCSV():
     dict = {}
     dictFinal = {}
     with open('dadosBenchmark_validacaoAlgoritmoAD.csv', mode='r') as csv_file:
@@ -176,11 +165,8 @@ def readingFile():
             line_count += 1
     return dictFinal
 
-# Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
 
-    fileXLS = readingFile()
-    print(fileXLS)
-    #fileXLS = generateDict()
-    decisionTree(fileXLS)
-
+    fileXLS = lerCSV()
+    arvoreDecisao(fileXLS)
