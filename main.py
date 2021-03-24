@@ -5,7 +5,7 @@
 
 import math
 from collections import Counter
-
+import csv
 
 def remove_repetidos(lista):
     l = []
@@ -26,8 +26,6 @@ def generateDict():
     myDict["classeyi"] = ['não', 'não', 'sim', 'sim', 'sim', 'não', 'sim', 'não', 'sim',
                          'sim', 'sim', 'sim', 'sim', 'não']
     return myDict
-
-
 def entropy(file):
     dictFinal = {}
 
@@ -92,8 +90,6 @@ def entropy(file):
         i+=1
 
     return final, returnDictionary
-
-
 def getPerIndex(file,index,key,listInds):
 
     print("indice da vez: ", index)
@@ -115,8 +111,6 @@ def getPerIndex(file,index,key,listInds):
             print("dict final::::: ",dictFinal)
 
     return dictFinal
-
-
 def calMaior(entropia):
     maiorValor = -1
     key = ""
@@ -125,7 +119,6 @@ def calMaior(entropia):
             maiorValor = entropia.get(etf)
             key = etf
     return maiorValor, key
-
 def decisionTree(file):
 
     tree = {}
@@ -162,9 +155,32 @@ def decisionTree(file):
         #break
 
 
+from collections import defaultdict
+
+
+def readingFile():
+    dict = {}
+    dictFinal = {}
+    with open('dadosBenchmark_validacaoAlgoritmoAD.csv', mode='r') as csv_file:
+        line_count = 0
+        for row in csv.reader(csv_file, delimiter=';'):
+            if line_count == 0:
+                numCol = 0
+                for r in row:
+                    dict[r] = (numCol)
+                    dictFinal[r] = []
+                    numCol += 1
+            else:
+                for rr in dict:
+                    dictFinal[rr].append(row[dict[rr]])
+            line_count += 1
+    return dictFinal
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    #print_hi('PyCharm')
-    fileXLS = generateDict()
+
+    fileXLS = readingFile()
+    print(fileXLS)
+    #fileXLS = generateDict()
     decisionTree(fileXLS)
 
