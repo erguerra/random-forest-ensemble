@@ -3,13 +3,11 @@ from dt.DecisionTree import DecisionTree
 
 
 def main():
-    dao = DAO('data/wine-recognition.tsv', 'output.csv')
-    dao.delimiter = '\t'
-    df = dao.read_data()
-    dt = DecisionTree(df, 'target')
-    root_node = dt.induction_algorithm(dt.d, dt.l)
+    dao = DAO('data/wine-recognition.tsv', '\t')
+    dt = DecisionTree(dao.dataset, 'target')
+    #root_node = dt.induction_algorithm(dt.d, dt.l)
 
-    dt.print_tree(root_node)
+    dao.get_bootstrap()
 
     # targets = df['target'].values
     # print(targets)
