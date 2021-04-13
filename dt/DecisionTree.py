@@ -1,6 +1,6 @@
-import math
-
-import numpy
+import copy
+import random
+from math import sqrt, log
 
 from dt.Node import Node
 
@@ -15,6 +15,20 @@ class DecisionTree:
         self.l = list(self.d.columns)
         self.l.remove(target_column_name)
         self.target_column_name = target_column_name
+        self.should_sample = False
+        self.root_node = None
+
+
+    def sample_attributes(self, l):
+        num_of_attributes = round(sqrt(len(l)))
+        max_index = len(l) - 1
+        new_l = []
+        while len(new_l) < num_of_attributes:
+            random_index = random.randint(0, max_index)
+            attribute = l[random_index]
+            if attribute not in new_l:
+                new_l.append(l[random_index])
+        return new_l
 
     def get_target_column(self, d):
         return d[self.target_column_name]
@@ -58,7 +72,7 @@ class DecisionTree:
         summ = 0
         probabilities = target_column.value_counts(True)
         for c, p in probabilities.items():
-            log_p = math.log(p, 2)
+            log_p = log(p, 2)
             summ -= (p * log_p)
         return summ
 
@@ -78,28 +92,38 @@ class DecisionTree:
         best_attribute = max(attr_to_gain, key=lambda key: attr_to_gain[key])
         return best_attribute, round(attr_to_gain[best_attribute], 4)
 
+    def train_tree(self):
+        d = self.d
+        l = self.l
+        self.root_node = copy.deepcopy(self.induction_algorithm(d, l))
+
     def induction_algorithm(self, d, l):
+        if self.should_sample:
+            sampled_l = self.sample_attributes(l)
+        else:
+            sampled_l = l
         node = Node()
         present_classes = self.get_classes(d)
+
         if len(present_classes) == 1:
             node.children = None
             node.leaf_value = present_classes[0]
             return node
         else:
-            if len(l) == 0:
+            if len(sampled_l) == 0:
                 node.children = None
                 node.leaf_value = self.get_most_frequent_class(d)
                 return node
             else:
-                selected_attribute, gain = self.get_best_attribute(d, l)
+                selected_attribute, gain = self.get_best_attribute(d, sampled_l)
                 node.split_attribute = selected_attribute
                 node.gain = gain
                 if str(d[selected_attribute].dtypes) == 'float64':
                     node.cutting_point = round(d[selected_attribute].mean(), 3)
-                l.remove(selected_attribute)
+                sampled_l.remove(selected_attribute)
                 node.children = {}
                 for k, v in self.split_data(d, selected_attribute).items():
-                    new_node = self.induction_algorithm(v, l)
+                    new_node = self.induction_algorithm(v, sampled_l)
                     new_node.value = k
                     node.children[k] = new_node
 

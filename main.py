@@ -1,13 +1,23 @@
+from data.BootstrapGenerator import BootstrapGenerator
 from data.DAO import DAO
 from dt.DecisionTree import DecisionTree
+from random_forest.RandomForest import RandomForest
 
 
 def main():
-    dao = DAO('data/wine-recognition.tsv', '\t')
-    dt = DecisionTree(dao.dataset, 'target')
-    #root_node = dt.induction_algorithm(dt.d, dt.l)
+    dao_numerical = DAO('data/wine-recognition.tsv', '\t')
+    dao_categorical = DAO('data/house_votes_84.tsv', '\t')
 
-    dao.get_bootstrap()
+    rf = RandomForest(d=dao_categorical.dataset, n=1, target_column_name='target')
+    rf.create_forest()
+    instance = dao_categorical.dataset.loc[86]
+    print(rf.classify_instance(instance))
+
+    # rf = RandomForest(d=dao_numerical.dataset, n=30, target_column_name='target')
+    # rf.create_forest()
+    # instance = dao_numerical.dataset.loc[85]
+    # print(rf.classify_instance(instance))
+
 
     # targets = df['target'].values
     # print(targets)
