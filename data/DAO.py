@@ -6,7 +6,8 @@ class DAO:
         self.inputFile = inputFile
         self.outputFile = outputFile
         self.dataset = ""
+        self.delimiter = ';'
 
     def read_data(self):
-        self.dataset = pd.read_csv(self.inputFile, delimiter=';')
+        self.dataset = pd.read_csv(self.inputFile, delimiter=self.delimiter)
         return self.dataset
