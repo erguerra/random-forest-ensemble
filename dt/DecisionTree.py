@@ -131,23 +131,26 @@ class DecisionTree:
 
         return node
 
+    def get_child_key(self, value, root_node):
+        if not isinstance(value, (str, int)):
+            if value.dtype == 'float64':
+                if value > root_node.cutting_point:
+                    return GREATER_THAN_KEY + str(root_node.cutting_point)
+                else:
+                    return LESS_OR_EQUAL_THAN_KEY + str(root_node.cutting_point)
+            else:
+                return value
+        else:
+            return value
+
     def classify(self, instance, root_node_tree):
         if root_node_tree.children is not None:
-            child_key = ''
             value = instance[root_node_tree.split_attribute]
-            if not isinstance(value, (str, int)):
-                if value.dtype == 'float64':
-                    if value > root_node_tree.cutting_point:
-                        child_key = GREATER_THAN_KEY + str(root_node_tree.cutting_point)
-                    else:
-                        child_key = LESS_OR_EQUAL_THAN_KEY + str(root_node_tree.cutting_point)
-            else:
-                child_key = value
+            child_key = self.get_child_key(value, root_node_tree)
             try:
                 next_node = root_node_tree.children[child_key]
             except KeyError:
                 next_node = root_node_tree.children[root_node_tree.most_popular_child]
-
             return self.classify(instance, next_node)
         return root_node_tree.leaf_value
 
