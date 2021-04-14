@@ -24,7 +24,8 @@ def main():
 
     # Code to execute cross validation
 
-    forest_sizes = [1, 5, 10, 15, 30, 50]
+    forest_sizes = [1, 5, 10, 15, 30, 50, 75, 100]
+
 
     results_categorical = {}
     for size in forest_sizes:
