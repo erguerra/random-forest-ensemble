@@ -18,7 +18,6 @@ class DecisionTree:
         self.should_sample = False
         self.root_node = None
 
-
     def sample_attributes(self, l):
         num_of_attributes = round(sqrt(len(l)))
         max_index = len(l) - 1
@@ -122,24 +121,33 @@ class DecisionTree:
                     node.cutting_point = round(d[selected_attribute].mean(), 3)
                 sampled_l.remove(selected_attribute)
                 node.children = {}
-                for k, v in self.split_data(d, selected_attribute).items():
+                grouped_data = self.split_data(d, selected_attribute)
+                node.most_popular_child = max(grouped_data, key=lambda x: len(grouped_data[x]))
+                for k, v in grouped_data.items():
                     new_node = self.induction_algorithm(v, sampled_l)
                     new_node.value = k
+
                     node.children[k] = new_node
 
         return node
 
     def classify(self, instance, root_node_tree):
         if root_node_tree.children is not None:
+            child_key = ''
             value = instance[root_node_tree.split_attribute]
-            if value.dtype == 'float64':
-                if value > root_node_tree.cutting_point:
-                    child_key = GREATER_THAN_KEY + str(root_node_tree.cutting_point)
-                else:
-                    child_key = LESS_OR_EQUAL_THAN_KEY + str(root_node_tree.cutting_point)
+            if not isinstance(value, (str, int)):
+                if value.dtype == 'float64':
+                    if value > root_node_tree.cutting_point:
+                        child_key = GREATER_THAN_KEY + str(root_node_tree.cutting_point)
+                    else:
+                        child_key = LESS_OR_EQUAL_THAN_KEY + str(root_node_tree.cutting_point)
             else:
                 child_key = value
-            next_node = root_node_tree.children[child_key]
+            try:
+                next_node = root_node_tree.children[child_key]
+            except KeyError:
+                next_node = root_node_tree.children[root_node_tree.most_popular_child]
+
             return self.classify(instance, next_node)
         return root_node_tree.leaf_value
 
