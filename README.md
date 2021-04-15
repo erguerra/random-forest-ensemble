@@ -8,7 +8,7 @@ Integrantes:
 - Eduardo Guerra
 
 
-## Necessário:
+## Necessário
 - python versão 3.8
 - instalar a lib pandas: `pip install pandas`
 
@@ -21,8 +21,7 @@ geração de florestas aleatórias.
 Após a execução o terminal exibirá a árvore.
 
 ### Execução para florestas aleatórias
-Comentar da linha 15 até a linha 22
-Depois de rodado, o arquivo results/categorical_results vai conter os
+Comentar da linha 15 até a linha 22. Após a execução, o arquivo results/categorical_results vai conter os
 resultados da floresta aleatória para o conjunto de dados "house_votes_84.tsv"; enquanto
 que o arquivo results/numerical_results vai conter os resultado para o conjunto de dados 
 wine-recognition.tsv
