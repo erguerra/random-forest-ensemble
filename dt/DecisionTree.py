@@ -43,7 +43,8 @@ class DecisionTree:
     '''
     In order to use this approach, it was necessary to make changes at the wine-recognition.tsv file
     Since the categorical data can also be represented as numbers (int64), all numbers that needs to be 
-    considered as continuous attributes must be represented by floating point numbers (float64), hence with a decimal point i.e(1.0). 
+    considered as continuous attributes must be represented by floating point numbers (float64), hence with a decimal
+    point i.e(1.0). 
     '''
 
     def split_data(self, d, attribute):
@@ -158,7 +159,7 @@ class DecisionTree:
         if root_node.children is not None:
             print(f'Attribute {root_node.split_attribute} Gain {root_node.gain}\n')
             for k, v in root_node.children.items():
-                if (v.split_attribute is not None):
+                if v.split_attribute is not None:
                     print(f'{root_node.split_attribute} is {k} leads to: {v.split_attribute}')
                 else:
                     print(f'{root_node.split_attribute} is {k} leads to leaf: {v.leaf_value}\n')
